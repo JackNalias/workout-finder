@@ -2,10 +2,17 @@
 	import { onMount } from 'svelte';
 	import 'quill/dist/quill.snow.css';
 	import type Quill from 'quill';
-	import type { PostAWorkoutBody } from './+server';
+	import PostSuccessModal from '$lib/components/Modals/PostSuccessModal.svelte';
+
+	export let data;
+	let { supabase } = data;
+	$: ({ supabase } = data);
 
 	let editor: HTMLElement;
 	let quill: Quill;
+	let title: string;
+	let excerpt: string;
+	let workoutPostedSuccess = false;
 
 	onMount(async () => {
 		const { default: Quill } = await import('quill');
@@ -28,21 +35,18 @@
 	});
 
 	const onPostWorkout = async () => {
-		const formEl = document.getElementById('post-a-workout-form') as HTMLFormElement;
-		const formData = new FormData(formEl);
-
-		const res = await fetch('/account/workouts/post-a-workout', {
-			method: 'POST',
-			body: JSON.stringify({
-				title: formData.get('title'),
-				excerpt: formData.get('excerpt'),
-				quillDeltaJson: quill.getContents(),
-				quillHtml: quill.root.innerHTML,
-				quillPlainText: quill.getText()
+		const { error: insertWorkoutError } = await supabase
+			.from('workouts')
+			.insert({
+				title: title,
+				excerpt: excerpt,
+				quill_delta_json: JSON.parse(JSON.stringify(quill.getContents())),
+				quill_html: quill.root.innerHTML,
+				quill_plain_text: quill.getText()
 			})
-		});
-
-		console.log(res);
+			.select();
+		workoutPostedSuccess = true;
+		console.log(insertWorkoutError);
 	};
 </script>
 
@@ -134,6 +138,7 @@
 							id="title"
 							class="block flex-1 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
 							placeholder="My Awesome Workout"
+							bind:value={title}
 						/>
 					</div>
 				</div>
@@ -150,6 +155,7 @@
 						rows="3"
 						class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 						placeholder="This workout will take you through..."
+						bind:value={excerpt}
 					/>
 				</div>
 				<p class="mt-3 text-sm leading-6 text-gray-600">
@@ -169,3 +175,4 @@
 		</div>
 	</form>
 </div>
+<PostSuccessModal open={workoutPostedSuccess} />
