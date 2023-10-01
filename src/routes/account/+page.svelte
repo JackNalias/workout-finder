@@ -1,3 +1,30 @@
+<script>
+	export let data;
+	let isEditingDisplayName = false;
+	let errorUpdatingDisplayName = false;
+
+	const handleDisplayNameSaveEdit = async () => {
+		console.log(data);
+		if (isEditingDisplayName) {
+			let { error } = await data.supabase
+				.from('user')
+				.update({
+					display_name: data.userProfile.display_name
+				})
+				.eq('id', data.user.id);
+			if (error) {
+				errorUpdatingDisplayName = true;
+				console.log(error);
+				return;
+			}
+			errorUpdatingDisplayName = false;
+			isEditingDisplayName = false;
+			return;
+		}
+		isEditingDisplayName = true;
+	};
+</script>
+
 <div class="md:flex md:items-center md:justify-between pt-12">
 	<div class="min-w-0 flex-1">
 		<h2
@@ -6,77 +33,82 @@
 			My Account
 		</h2>
 	</div>
-	<div class="mt-4 flex md:ml-4 md:mt-0">
-		<button
-			type="button"
-			class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-			>Edit</button
-		>
-		<button
-			type="button"
-			class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-			>Save</button
-		>
-	</div>
 </div>
 
 <form>
 	<div class="space-y-12">
-		<div class="border-b border-gray-900/10 pb-12">
-			<div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-				<div class="sm:col-span-4">
-					<label for="username" class="block text-sm font-medium leading-6 text-gray-900"
-						>Display name</label
-					>
-					<div class="mt-2">
-						<div
-							class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md"
-						>
-							<input
-								type="text"
-								name="display-name"
-								id="display-name"
-								class="block flex-1 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-							/>
-						</div>
+		<div class="border-b border-gray-900/10 pb-12 mt-10">
+			<div class="">
+				<label for="email" class="block text-sm font-medium leading-6 text-gray-900"
+					>Display name</label
+				>
+				<div class="mt-2 flex rounded-md shadow-sm">
+					<div class="relative flex flex-grow items-stretch focus-within:z-10">
+						<input
+							type="email"
+							name="email"
+							id="email"
+							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+							bind:value={data.userProfile.display_name}
+							readonly={!isEditingDisplayName}
+						/>
 					</div>
+					<button
+						type="button"
+						on:click={handleDisplayNameSaveEdit}
+						class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+					>
+						{isEditingDisplayName ? 'Save' : 'Edit'}
+					</button>
 				</div>
-
-				<div class="sm:col-span-4">
-					<label for="username" class="block text-sm font-medium leading-6 text-gray-900"
-						>Email</label
-					>
-					<div class="mt-2">
-						<div
-							class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md"
-						>
-							<input
-								type="text"
-								name="username"
-								id="username"
-								class="block flex-1 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-							/>
-						</div>
+				{#if errorUpdatingDisplayName}
+					<p class="mt-2 text-sm text-red-600" id="email-error">
+						An error has occurred whilst updating your display name, please try again later.
+					</p>
+				{/if}
+			</div>
+			<div class="mt-8">
+				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+				<div class="mt-2 flex rounded-md shadow-sm">
+					<div class="relative flex flex-grow items-stretch focus-within:z-10">
+						<input
+							type="email"
+							name="email"
+							id="email"
+							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+							bind:value={data.user.email}
+							readonly
+						/>
 					</div>
+					<button
+						type="button"
+						class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+					>
+						Edit
+					</button>
 				</div>
-
-				<div class="sm:col-span-4">
-					<label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-						>Password</label
-					>
-					<div class="mt-2">
-						<div
-							class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md"
-						>
-							<input
-								type="password"
-								name="password"
-								id="password"
-								class="block flex-1 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-								placeholder=""
-							/>
-						</div>
+			</div>
+			<div class="mt-8">
+				<label for="password" class="block text-sm font-medium leading-6 text-gray-900"
+					>Password</label
+				>
+				<div class="mt-2 flex rounded-md shadow-sm">
+					<div class="relative flex flex-grow items-stretch focus-within:z-10">
+						<input
+							type="password"
+							name="password"
+							id="password"
+							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+							value="                   "
+							readonly
+						/>
 					</div>
+					<button
+						type="button"
+						class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+					>
+						Edit
+					</button>
 				</div>
 			</div>
 		</div>
