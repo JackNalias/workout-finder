@@ -1,5 +1,5 @@
 // src/routes/login/+page.server.ts
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
 	default: async ({ request, url, locals: { supabase } }) => {
@@ -7,7 +7,16 @@ export const actions = {
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
-		const { error } = await supabase.auth.signUp({
+		const { data: user } = await supabase.auth.signInWithPassword({
+			email,
+			password
+		});
+
+		if (user) {
+			throw redirect(303, `${url.origin}/auth/callback`);
+		}
+
+		const { error: signUpError } = await supabase.auth.signUp({
 			email,
 			password,
 			options: {
@@ -15,8 +24,8 @@ export const actions = {
 			}
 		});
 
-		if (error) {
-			return fail(500, { message: error.message, success: false, email });
+		if (signUpError) {
+			return fail(500, { message: signUpError.message, success: false, email });
 		}
 
 		return {

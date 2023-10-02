@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 
+	export let onSignOut = () => {};
+	export let isLoggedIn = false;
+
 	let open = false;
-	let isLoggedIn = false;
 	const navItems = [
 		{
 			text: 'Search',
@@ -134,12 +136,12 @@
 								tabindex="-1"
 								id="user-menu-item-1">Settings</a
 							>
-							<a
-								href="#"
-								class="block px-4 py-2 text-sm text-gray-700"
+							<button
+								on:click={onSignOut}
+								class="block px-4 py-2 text-sm text-gray-700 w-full text-left"
 								role="menuitem"
 								tabindex="-1"
-								id="user-menu-item-2">Sign out</a
+								id="user-menu-item-2">Sign out</button
 							>
 						</div>
 					</div>

@@ -22,7 +22,7 @@
 	});
 </script>
 
-<Navbar />
+<Navbar isLoggedIn={session?.user ? true : false} onSignOut={() => supabase.auth.signOut()} />
 <main>
 	<slot />
 </main>
