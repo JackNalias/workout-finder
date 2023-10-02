@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import 'quill/dist/quill.snow.css';
+	import '../../../../quill.css';
 	import type Quill from 'quill';
 	import PostSuccessModal from '$lib/components/Modals/PostSuccessModal.svelte';
 
@@ -20,10 +20,10 @@
 		quill = new Quill(editor, {
 			modules: {
 				toolbar: [
-					[{ size: [] }],
+					[{ header: [1, 2, 3, 4, false] }],
 					['bold', 'italic', 'underline', 'strike'],
 					[{ script: 'super' }, { script: 'sub' }],
-					[{ header: '1' }, { header: '2' }, 'blockquote', 'code-block'],
+					['blockquote', 'code-block'],
 					[{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
 					[{ align: [] }],
 					['link', 'image', 'video']
@@ -168,8 +168,8 @@
 					>Workout Content
 				</label>
 				<p class="mb-1.5 text-sm leading-6 text-gray-600">Feel free to link your socials 😀</p>
-				<div id="editor" class="">
-					<div bind:this={editor} class="h-screen" />
+				<div id="editor">
+					<div bind:this={editor} class="h-screen prose prose-2xl max-w-none" />
 				</div>
 			</div>
 		</div>

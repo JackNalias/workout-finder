@@ -39,7 +39,7 @@
 							<div class="flex min-w-0 gap-x-4">
 								<div class="min-w-0 flex-auto">
 									<p class="text-lg font-semibold leading-6 text-gray-900">
-										<a href="#">
+										<a href="/{article.id}">
 											<span class="absolute inset-x-0 -top-px bottom-0" />
 											{article.title}
 										</a>

@@ -3,7 +3,7 @@
 </script>
 
 <div
-	class="relative z-10 {open ? 'z-50' : '-z-10'}"
+	class="relative {open ? 'z-50' : '-z-10'}"
 	aria-labelledby="modal-title"
 	role="dialog"
 	aria-modal="true"

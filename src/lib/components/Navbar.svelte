@@ -7,7 +7,7 @@
 	let open = false;
 	const navItems = [
 		{
-			text: 'Search',
+			text: 'Search workouts',
 			url: '/'
 		},
 		{
@@ -128,13 +128,6 @@
 								role="menuitem"
 								tabindex="-1"
 								id="user-menu-item-0">Account</a
-							>
-							<a
-								href="#"
-								class="block px-4 py-2 text-sm text-gray-700"
-								role="menuitem"
-								tabindex="-1"
-								id="user-menu-item-1">Settings</a
 							>
 							<button
 								on:click={onSignOut}
@@ -263,17 +256,12 @@
 						<a
 							href="/account"
 							class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-							>Your Account</a
+							>Account</a
 						>
-						<a
-							href="#"
-							class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-							>Settings</a
-						>
-						<a
-							href="#"
-							class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-							>Sign out</a
+						<button
+							on:click={onSignOut}
+							class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 w-full text-left"
+							>Sign out</button
 						>
 					</div>
 				</div>
