@@ -5,10 +5,11 @@
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
 	<div class="max-w-4xl mx-auto mb-4">
 		<div class="text-right mb-4">
-			<button
+			<a
 				type="button"
+				href="/account/workouts/post-a-workout"
 				class="rounded-md bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-				>Post a Workout</button
+				>Post a Workout</a
 			>
 		</div>
 

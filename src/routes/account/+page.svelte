@@ -1,12 +1,16 @@
 <script>
+	import { page } from '$app/stores';
+
 	export let data;
 	let isEditingDisplayName = false;
 	let errorUpdatingDisplayName = false;
+	let isEditingEmail = false;
+	let emailUpdateTriggered = false;
+	let emailUpdateError = '';
 
 	const handleDisplayNameSaveEdit = async () => {
-		console.log(data);
 		if (isEditingDisplayName) {
-			let { error } = await data.supabase
+			const { error } = await data.supabase
 				.from('user')
 				.update({
 					display_name: data.userProfile.display_name
@@ -22,6 +26,29 @@
 			return;
 		}
 		isEditingDisplayName = true;
+	};
+
+	const handleEmailEdit = async () => {
+		if (isEditingEmail) {
+			// on save
+			isEditingEmail = true;
+			const { error } = await data.supabase.auth.updateUser(
+				{ email: data.user.email },
+				{
+					emailRedirectTo: `${$page.url}`
+				}
+			);
+			if (!error) {
+				emailUpdateTriggered = true;
+				console.log(emailUpdateTriggered);
+			} else {
+				emailUpdateError = error.message;
+			}
+			isEditingEmail = false;
+			return;
+		}
+		// on edit
+		isEditingEmail = true;
 	};
 </script>
 
@@ -77,16 +104,28 @@
 							id="email"
 							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 							bind:value={data.user.email}
-							readonly
+							readonly={!isEditingEmail}
 						/>
 					</div>
 					<button
 						type="button"
+						on:click={handleEmailEdit}
 						class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
 					>
-						Edit
+						{isEditingEmail ? 'Save' : 'Edit'}
 					</button>
 				</div>
+				{#if emailUpdateError.length > 0}
+					<p class="mt-2 text-sm text-red-600">{emailUpdateError}</p>
+				{:else if $page.url.searchParams.get('message')}
+					<p class="mt-2 text-sm text-blue-600">
+						{$page.url.searchParams.get('message')}
+					</p>
+				{:else if emailUpdateTriggered}
+					<p class="mt-2 text-sm text-blue-600">
+						To confirm your email change, follow the magic link sent to both your old and new email.
+					</p>
+				{/if}
 			</div>
 			<div class="mt-8">
 				<label for="password" class="block text-sm font-medium leading-6 text-gray-900"
