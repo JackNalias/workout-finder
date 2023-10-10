@@ -1,17 +1,25 @@
-import { SupabaseClient, Session } from '@supabase/supabase-js';
-import { Database } from './database.types';
+import type { DefaultSession } from '@auth/core/types';
+import type { PrismaClient } from '@prisma/client';
+import type { Session } from '@auth/core/types';
 
 declare global {
 	namespace App {
 		interface Locals {
-			supabase: SupabaseClient<Database>;
-			getSession(): Promise<Session | null>;
+			prisma: PrismaClient;
+			session: Session;
 		}
-		interface PageData {
-			session: Session | null;
-		}
+		interface PageData {}
+
 		// interface Error {}
 		// interface Platform {}
+	}
+}
+
+declare module '@auth/core/types' {
+	interface Session {
+		user: {
+			id: string;
+		} & DefaultSession['user'];
 	}
 }
 

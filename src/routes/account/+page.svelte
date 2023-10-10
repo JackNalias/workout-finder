@@ -8,48 +8,9 @@
 	let emailUpdateTriggered = false;
 	let emailUpdateError = '';
 
-	const handleDisplayNameSaveEdit = async () => {
-		if (isEditingDisplayName) {
-			const { error } = await data.supabase
-				.from('user')
-				.update({
-					display_name: data.userProfile.display_name
-				})
-				.eq('id', data.user.id);
-			if (error) {
-				errorUpdatingDisplayName = true;
-				console.log(error);
-				return;
-			}
-			errorUpdatingDisplayName = false;
-			isEditingDisplayName = false;
-			return;
-		}
-		isEditingDisplayName = true;
-	};
+	const handleDisplayNameSaveEdit = async () => {};
 
-	const handleEmailEdit = async () => {
-		if (isEditingEmail) {
-			// on save
-			isEditingEmail = true;
-			const { error } = await data.supabase.auth.updateUser(
-				{ email: data.user.email },
-				{
-					emailRedirectTo: `${$page.url}`
-				}
-			);
-			if (!error) {
-				emailUpdateTriggered = true;
-				console.log(emailUpdateTriggered);
-			} else {
-				emailUpdateError = error.message;
-			}
-			isEditingEmail = false;
-			return;
-		}
-		// on edit
-		isEditingEmail = true;
-	};
+	const handleEmailEdit = async () => {};
 </script>
 
 <div class="md:flex md:items-center md:justify-between pt-12">
@@ -76,7 +37,7 @@
 							name="email"
 							id="email"
 							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-							bind:value={data.userProfile.display_name}
+							bind:value={data.user.name}
 							readonly={!isEditingDisplayName}
 						/>
 					</div>
@@ -126,29 +87,6 @@
 						To confirm your email change, follow the magic link sent to both your old and new email.
 					</p>
 				{/if}
-			</div>
-			<div class="mt-8">
-				<label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-					>Password</label
-				>
-				<div class="mt-2 flex rounded-md shadow-sm">
-					<div class="relative flex flex-grow items-stretch focus-within:z-10">
-						<input
-							type="password"
-							name="password"
-							id="password"
-							class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-							value="                   "
-							readonly
-						/>
-					</div>
-					<button
-						type="button"
-						class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-					>
-						Edit
-					</button>
-				</div>
 			</div>
 		</div>
 	</div>

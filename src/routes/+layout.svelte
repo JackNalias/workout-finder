@@ -1,28 +1,12 @@
 <script>
 	import Navbar from '$lib/components/Navbar.svelte';
 	import '../app.css';
-	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { signOut } from '@auth/sveltekit/client';
 
 	export let data;
-
-	let { supabase, session } = data;
-	$: ({ supabase, session } = data);
-
-	onMount(() => {
-		const {
-			data: { subscription }
-		} = supabase.auth.onAuthStateChange((event, _session) => {
-			if (_session?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth');
-			}
-		});
-
-		return () => subscription.unsubscribe();
-	});
 </script>
 
-<Navbar isLoggedIn={session?.user ? true : false} onSignOut={() => supabase.auth.signOut()} />
+<Navbar isLoggedIn={data.session?.user ? true : false} onSignOut={() => signOut()} />
 <main>
 	<slot />
 </main>

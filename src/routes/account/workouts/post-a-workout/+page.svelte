@@ -4,15 +4,41 @@
 	import type Quill from 'quill';
 	import PostSuccessModal from '$lib/components/Modals/PostSuccessModal.svelte';
 
-	export let data;
-	let { supabase } = data;
-	$: ({ supabase } = data);
-
 	let editor: HTMLElement;
 	let quill: Quill;
-	let title: string;
-	let excerpt: string;
+	let title: string = '';
+	let titleErrMsg = '';
+	let excerpt: string = '';
+	let excerptErrMsg = '';
+
 	let workoutPostedSuccess = false;
+	let publishAttempted = false;
+
+	const noValueErrMsg = 'Please provide a value.';
+
+	const refreshTitleErrMsg = () => {
+		if (title.length < 1) {
+			titleErrMsg = noValueErrMsg;
+			return;
+		}
+		if (title.length > 200) {
+			titleErrMsg = 'Title can not be longer than 200 characters.';
+			return;
+		}
+		titleErrMsg = '';
+	};
+
+	const refreshExcerptErrMsg = () => {
+		if (excerpt.length < 1) {
+			excerptErrMsg = noValueErrMsg;
+			return;
+		}
+		if (excerpt.length > 2000) {
+			excerptErrMsg = 'Excerpt can no be longer than 2000 characters.';
+			return;
+		}
+		excerptErrMsg = '';
+	};
 
 	onMount(async () => {
 		const { default: Quill } = await import('quill');
@@ -34,19 +60,34 @@
 		});
 	});
 
-	const onPostWorkout = async () => {
-		const { error: insertWorkoutError } = await supabase
-			.from('workouts')
-			.insert({
+	const onPublish = async () => {
+		refreshExcerptErrMsg();
+		refreshTitleErrMsg();
+
+		if (titleErrMsg || excerptErrMsg) {
+			return;
+		}
+
+		postWorkout();
+	};
+
+	const postWorkout = async () => {
+		const res = await fetch('/api/workout', {
+			method: 'POST',
+			body: JSON.stringify({
 				title: title,
 				excerpt: excerpt,
 				quill_delta_json: JSON.parse(JSON.stringify(quill.getContents())),
 				quill_html: quill.root.innerHTML,
 				quill_plain_text: quill.getText()
 			})
-			.select();
-		workoutPostedSuccess = true;
-		console.log(insertWorkoutError);
+		});
+
+		if (res.ok) {
+			workoutPostedSuccess = true;
+		} else {
+			console.log('boom');
+		}
 	};
 </script>
 
@@ -102,7 +143,7 @@
 			</li>
 		</ol>
 	</nav>
-	<form id="post-a-workout-form" on:submit={onPostWorkout}>
+	<form id="post-a-workout-form" on:submit={onPublish}>
 		<div class="md:flex md:items-center md:justify-between">
 			<div class="min-w-0 flex-1">
 				<h2
@@ -126,11 +167,11 @@
 		</div>
 
 		<div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-			<div class="sm:col-span-4">
+			<div class="sm:col-span-6">
 				<label for="title" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
 				<div class="mt-2">
 					<div
-						class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md"
+						class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600"
 					>
 						<input
 							type="text"
@@ -141,6 +182,11 @@
 							bind:value={title}
 						/>
 					</div>
+					{#if titleErrMsg}
+						<p class="mt-2 text-sm text-red-600" id="email-error">
+							{titleErrMsg}
+						</p>
+					{/if}
 				</div>
 			</div>
 
@@ -158,16 +204,28 @@
 						bind:value={excerpt}
 					/>
 				</div>
-				<p class="mt-3 text-sm leading-6 text-gray-600">
-					Write a quick introduction to your workout.
-				</p>
+				{#if excerptErrMsg}
+					<p class="mt-2 text-sm text-red-600" id="email-error">
+						{excerptErrMsg}
+					</p>
+				{:else}
+					<p class="mt-2 text-sm leading-6 text-gray-600">
+						Write a quick introduction to your workout.
+					</p>
+				{/if}
 			</div>
 
 			<div class="col-span-full">
 				<label for="workout-content" class="block text-sm font-medium leading-6 text-gray-900"
 					>Workout Content
 				</label>
-				<p class="mb-1.5 text-sm leading-6 text-gray-600">Feel free to link your socials 😀</p>
+
+				<p class=" text-sm leading-6 text-gray-600">Feel free to link your socials 😀</p>
+				{#if excerptErrMsg}
+					<p class="mb-1.5 text-sm text-red-600" id="email-error">
+						{excerptErrMsg}
+					</p>
+				{/if}
 				<div id="editor">
 					<div bind:this={editor} class="h-screen prose prose-2xl max-w-none" />
 				</div>

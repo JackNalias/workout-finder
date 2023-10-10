@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { signIn } from '@auth/sveltekit/client';
 
 	export let onSignOut = () => {};
 	export let isLoggedIn = false;
@@ -47,8 +48,8 @@
 			<div class="hidden sm:ml-6 sm:flex sm:items-center">
 				{#if !$page.data.session?.user}
 					<div class="lg:flex lg:flex-1 lg:justify-end">
-						<a
-							href="/login"
+						<button
+							on:click={() => signIn()}
 							class="flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 group"
 							>Log in <svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +65,7 @@
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
-							</svg></a
+							</svg></button
 						>
 					</div>
 				{:else}
@@ -206,13 +207,13 @@
 					>
 				{/each}
 				{#if !isLoggedIn}
-					<a
-						href="/login"
-						class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium {$page.url.pathname ===
-						'/login'
+					<button
+						on:click={() => signIn()}
+						class="block w-full text-left border-l-4 py-2 pl-3 pr-4 text-base font-medium {$page.url
+							.pathname === '/login'
 							? 'bg-indigo-50 border-indigo-500 text-indigo-700'
 							: 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'}"
-						>Login</a
+						>Login</button
 					>
 				{/if}
 			</div>

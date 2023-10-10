@@ -1,29 +1,33 @@
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
+import { SvelteKitAuth } from '@auth/sveltekit';
+import Google from '@auth/core/providers/google';
 import type { Handle } from '@sveltejs/kit';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaClient } from '@prisma/client';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { sequence } from '@sveltejs/kit/hooks';
 
-export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.supabase = createSupabaseServerClient({
-		supabaseUrl: PUBLIC_SUPABASE_URL,
-		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
-		event
-	});
+const prisma = new PrismaClient();
 
-	/**
-	 * a little helper that is written for convenience so that instead
-	 * of calling `const { data: { session } } = await supabase.auth.getSession()`
-	 * you just call this `await getSession()`
-	 */
-	event.locals.getSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-		return session;
-	};
-
-	return resolve(event, {
-		filterSerializedResponseHeaders(name) {
-			return name === 'content-range';
-		}
-	});
-};
+export const handle = sequence(
+	SvelteKitAuth({
+		providers: [
+			Google({
+				clientId: GOOGLE_CLIENT_ID,
+				clientSecret: GOOGLE_CLIENT_SECRET
+			})
+		],
+		callbacks: {
+			session: ({ session, user }) => {
+				if (session.user) {
+					session.user.id = user.id;
+				}
+				return Promise.resolve(session);
+			}
+		},
+		adapter: PrismaAdapter(prisma)
+	}) satisfies Handle,
+	({ event, resolve }) => {
+		event.locals.prisma = prisma;
+		return resolve(event);
+	}
+);
