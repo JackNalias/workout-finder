@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -9,7 +10,7 @@ datasource db {
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -28,20 +29,24 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Workout       Workout[]
+  id             Int              @id @default(autoincrement())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  Comment        Comment[]
+  CommentLike    CommentLike[]
+  sessions       Session[]
+  Workout        Workout[]
+  WorkoutDislike WorkoutDislike[]
+  WorkoutLike    WorkoutLike[]
 }
 
 model VerificationToken {
@@ -53,12 +58,73 @@ model VerificationToken {
 }
 
 model Workout {
-  id                Int    @id(map: "PK_Workout") @default(autoincrement())
-  fkCreatedByUserId String
-  title             String @db.VarChar(200)
-  excerpt           String @db.VarChar(2000)
-  quill_delta_json  String @db.Text
-  quill_html        String @db.Text
-  quill_plain_text  String @db.Text
-  User              User   @relation(fields: [fkCreatedByUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Workout_User")
+  id                Int              @id(map: "PK_Workout") @default(autoincrement())
+  fkCreatedByUserId Int
+  title             String           @db.VarChar(200)
+  excerpt           String           @db.VarChar(2000)
+  quill_delta_json  String           @db.Text
+  quill_html        String           @db.Text
+  quill_plain_text  String           @db.Text
+  createdOn         DateTime         @default(now(), map: "DF_Workout_createdOn") @db.Date
+  lastModifiedOn    DateTime         @default(now(), map: "DF_Workout_lastModifiedOn") @db.Date
+  Comment           Comment[]
+  User              User             @relation(fields: [fkCreatedByUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Workout_User")
+  WorkoutDislike    WorkoutDislike[]
+  WorkoutLike       WorkoutLike[]
+}
+
+model WorkoutDislike {
+  id          Int     @id(map: "PK_WorkoutDislike") @default(autoincrement())
+  fkUserId    Int
+  fkWorkoutId Int
+  User        User    @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_WorkoutDislike_User")
+  Workout     Workout @relation(fields: [fkWorkoutId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_WorkoutDislike_Workout")
+
+  @@unique([fkUserId, fkWorkoutId], map: "UQ_WorkoutDislike")
+}
+
+model WorkoutLike {
+  id          Int     @id(map: "PK_WorkoutLike") @default(autoincrement())
+  fkUserId    Int
+  fkWorkoutId Int
+  User        User    @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_WorkoutLike_User")
+  Workout     Workout @relation(fields: [fkWorkoutId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_WorkoutLike_Workout")
+
+  @@unique([fkUserId, fkWorkoutId], map: "UQ_WorkoutLike")
+}
+
+model Comment {
+  id                Int           @id(map: "PK_Comment") @default(autoincrement())
+  fkParentCommentId Int
+  fkUserId          Int
+  fkWorkoutId       Int
+  commentText       String        @db.VarChar(2000)
+  isDeleted         Boolean
+  createdOn         DateTime      @default(now(), map: "DF_Comment_createdOn") @db.SmallDateTime
+  Comment           Comment       @relation("CommentToComment", fields: [fkParentCommentId], references: [id], onUpdate: NoAction, map: "FK_Comment_ParentComment")
+  other_Comment     Comment[]     @relation("CommentToComment")
+  User              User          @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_Comment_User")
+  Workout           Workout       @relation(fields: [fkWorkoutId], references: [id], onUpdate: NoAction, map: "FK_Comment_Workout")
+  CommentLike       CommentLike[]
+}
+
+model CommentLike {
+  id          Int     @id(map: "PK_CommentLike") @default(autoincrement())
+  fkUserId    Int
+  fkCommentId Int
+  Comment     Comment @relation(fields: [fkCommentId], references: [id], onUpdate: NoAction, map: "FK_CommentLike_Comment")
+  User        User    @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_CommentLike_User")
+}
+
+view VwWorkout {
+  workoutId         Int      @unique
+  title             String   @db.VarChar(200)
+  excerpt           String   @db.VarChar(2000)
+  quill_html        String   @db.Text
+  createdByUserName String?
+  createdByUserId   Int
+  likes             Int
+  dislikes          Int
+  comments          Int
+  lastModifiedOn    DateTime @db.Date
 }

@@ -40,7 +40,7 @@
 							<div class="flex min-w-0 gap-x-4">
 								<div class="min-w-0 flex-auto">
 									<p class="text-lg font-semibold leading-6 text-gray-900">
-										<a href="/{article.id}">
+										<a href="/{article.workoutId}">
 											<span class="absolute inset-x-0 -top-px bottom-0" />
 											{article.title}
 										</a>
@@ -52,9 +52,11 @@
 							</div>
 							<div class="flex shrink-0 items-center gap-x-4">
 								<div class="hidden sm:flex sm:flex-col sm:items-end">
-									<p class="text-sm leading-6 text-gray-900">By: Jack Nalias</p>
+									<p class="text-sm leading-6 text-gray-900">By: {article.createdByUserName}</p>
 									<p class="mt-1 text-xs leading-5 text-gray-500">
-										Last updated: <time datetime="2023-01-23T13:23Z">2023-01-15</time>
+										Last updated: <time datetime={article.lastModifiedOn.toLocaleDateString()}
+											>{article.lastModifiedOn.toLocaleDateString()}</time
+										>
 									</p>
 								</div>
 								<svg
@@ -103,7 +105,7 @@
 									height="1.465"
 								/>
 							</svg>
-							<div class="text-sm font-semibold">10k</div>
+							<div class="text-sm font-semibold">{article.likes}</div>
 						</div>
 						<div class="flex gap-1 items-center">
 							<svg
@@ -135,7 +137,7 @@
 									height="1.465"
 								/>
 							</svg>
-							<div class="text-sm font-semibold">10k</div>
+							<div class="text-sm font-semibold">{article.dislikes}</div>
 						</div>
 						<div class="flex gap-1 items-center">
 							<svg
@@ -156,7 +158,7 @@
 									</g>
 								</g>
 							</svg>
-							<div class="text-sm font-semibold">10k</div>
+							<div class="text-sm font-semibold">{article.comments}</div>
 						</div>
 					</div>
 				</li>

@@ -19,7 +19,7 @@ export const handle = sequence(
 		callbacks: {
 			session: ({ session, user }) => {
 				if (session.user) {
-					session.user.id = user.id;
+					session.user.id = +user.id;
 				}
 				return Promise.resolve(session);
 			}

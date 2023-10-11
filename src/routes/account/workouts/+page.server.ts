@@ -7,6 +7,6 @@ export const load = async ({ locals: { prisma, getSession } }) => {
 	}
 
 	return {
-		workouts: prisma.workout.findMany({ where: { fkCreatedByUserId: session.user.id } })
+		workouts: prisma.vwWorkout.findMany({ where: { createdByUserId: session.user.id } })
 	};
 };

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import '../../../../quill.css';
 	import type Quill from 'quill';
 	import PostSuccessModal from '$lib/components/Modals/PostSuccessModal.svelte';
 
@@ -55,8 +54,7 @@
 					['link', 'image', 'video']
 				]
 			},
-			theme: 'snow',
-			placeholder: 'Write your workout...'
+			theme: 'snow'
 		});
 	});
 
@@ -227,10 +225,14 @@
 					</p>
 				{/if}
 				<div id="editor">
-					<div bind:this={editor} class="h-screen prose prose-2xl max-w-none" />
+					<div bind:this={editor} class="h-screen prose prose-xl max-w-none" />
 				</div>
 			</div>
 		</div>
 	</form>
 </div>
 <PostSuccessModal open={workoutPostedSuccess} />
+
+<style>
+	@import url('../../../../quill.css');
+</style>

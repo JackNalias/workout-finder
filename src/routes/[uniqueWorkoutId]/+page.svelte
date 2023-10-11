@@ -1,24 +1,69 @@
 <script lang="ts">
-	import { addUserWorkoutStat, deleteUserWorkoutStat } from '$lib/utlities/data-fetchers';
 	import '../../quill.css';
-	import type { PostgrestError } from '@supabase/supabase-js';
 
 	export let data;
 
 	let statActionedWhilstNoSession = false;
 	let serverErrorOnStatAction = false;
 
-	data.isWorkoutLiked = false;
-	data.isWorkoutDisliked = false;
-
 	const resetState = () => {
 		statActionedWhilstNoSession = false;
 		serverErrorOnStatAction = false;
 	};
 
-	const onLike = async () => {};
+	const onLike = async () => {
+		let method = 'POST';
+		serverErrorOnStatAction = false;
 
-	const onDislike = async () => {};
+		if (data.userLikedWorkout) {
+			method = 'DELETE';
+		}
+
+		const res = await fetch(`/api/workout-like/${data.workout.workoutId}`, {
+			method
+		});
+
+		if (!res.ok) {
+			serverErrorOnStatAction = true;
+			return;
+		}
+
+		if (method === 'POST') {
+			data.userLikedWorkout = true;
+			data.workout.likes++;
+			return;
+		}
+
+		data.workout.likes--;
+		data.userLikedWorkout = false;
+	};
+
+	const onDislike = async () => {
+		let method = 'POST';
+		serverErrorOnStatAction = false;
+
+		if (data.userDislikedWorkout) {
+			method = 'DELETE';
+		}
+
+		const res = await fetch(`/api/workout-dislike/${data.workout.workoutId}`, {
+			method
+		});
+
+		if (!res.ok) {
+			serverErrorOnStatAction = true;
+			return;
+		}
+
+		if (method === 'POST') {
+			data.userDislikedWorkout = true;
+			data.workout.dislikes++;
+			return;
+		}
+
+		data.workout.dislikes--;
+		data.userDislikedWorkout = false;
+	};
 </script>
 
 <div class="prose prose-xl mx-auto py-12 px-4 sm:px-0">
@@ -54,8 +99,10 @@
 						height="1.465"
 					/></svg
 				>
-				<div class="text-lg font-semibold {data.isWorkoutLiked ? 'border-b border-blue-500' : ''}">
-					10k
+				<div
+					class="text-lg font-semibold {data.userLikedWorkout ? 'border-b border-blue-500' : ''}"
+				>
+					{data.workout.likes}
 				</div>
 			</button>
 
@@ -87,9 +134,9 @@
 					/></svg
 				>
 				<div
-					class="text-lg font-semibold {data.isWorkoutDisliked ? 'border-b border-blue-500' : ''}"
+					class="text-lg font-semibold {data.userDislikedWorkout ? 'border-b border-blue-500' : ''}"
 				>
-					10k
+					{data.workout.dislikes}
 				</div>
 			</button>
 			<button class="flex gap-1 items-center">
@@ -110,7 +157,7 @@
 						></g
 					></svg
 				>
-				<div class="text-lg font-semibold border-b border-blue-500">10k</div>
+				<div class="text-lg font-semibold border-b border-blue-500">{data.workout.comments}</div>
 			</button>
 		</form>
 		<div class="flex flex-col text-base text-right">

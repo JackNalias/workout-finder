@@ -85,7 +85,7 @@
 													height="1.465"
 												/>
 											</svg>
-											<div class="text-sm font-semibold">10k</div>
+											<div class="text-sm font-semibold">{article.likes}</div>
 										</div>
 										<div class="flex gap-1 items-center">
 											<svg
@@ -117,7 +117,7 @@
 													height="1.465"
 												/>
 											</svg>
-											<div class="text-sm font-semibold">10k</div>
+											<div class="text-sm font-semibold">{article.dislikes}</div>
 										</div>
 										<div class="flex gap-1 items-center">
 											<svg
@@ -148,7 +148,7 @@
 													</g>
 												</g>
 											</svg>
-											<div class="text-sm font-semibold">10k</div>
+											<div class="text-sm font-semibold">{article.comments}</div>
 										</div>
 									</div>
 								</div>
@@ -161,7 +161,7 @@
 										>Edit</button
 									>
 									<a
-										href="/{article.id}"
+										href="/{article.workoutId}"
 										type="button"
 										class="rounded bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 										>View</a
