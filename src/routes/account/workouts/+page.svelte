@@ -9,7 +9,6 @@
 			method: 'DELETE'
 		});
 		if (res.ok) {
-			console.log(1);
 			invalidate('user:workouts');
 		}
 	};

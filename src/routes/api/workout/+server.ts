@@ -74,15 +74,11 @@ export const GET: RequestHandler = async ({ locals: { prisma }, url }) => {
 			}
 		}
 
-		console.log(or);
-
 		workouts = await prisma.vwWorkout.findMany({
 			where: {
 				OR: or
 			}
 		});
-
-		console.log(workouts);
 	}
 
 	return json(workouts);
