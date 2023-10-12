@@ -1,3 +1,5 @@
+/// <reference types="svelte-adapter-azure-swa" />
+
 import type { DefaultSession } from '@auth/core/types';
 import type { PrismaClient } from '@prisma/client';
 

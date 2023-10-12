@@ -1,6 +1,6 @@
 import type { VwWorkout, Workout } from '@prisma/client';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import sanitizeHtml, { defaults } from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 
 export const POST: RequestHandler = async ({ request, locals: { prisma, getSession } }) => {
 	const session = await getSession();
@@ -15,6 +15,7 @@ export const POST: RequestHandler = async ({ request, locals: { prisma, getSessi
 	}
 
 	if (body.excerpt?.length > 2000) {
+		sanitizeHtml.defaults;
 		throw error(400);
 	}
 
@@ -23,12 +24,12 @@ export const POST: RequestHandler = async ({ request, locals: { prisma, getSessi
 	}
 
 	body.quill_html = sanitizeHtml(body.quill_html, {
-		allowedTags: ['iframe', ...defaults.allowedTags],
+		allowedTags: ['iframe', ...sanitizeHtml.defaults.allowedTags],
 		allowedClasses: {
 			'*': ['*']
 		},
 		allowedAttributes: {
-			...defaults.allowedAttributes,
+			...sanitizeHtml.defaults.allowedAttributes,
 			'*': ['class']
 		}
 	});
