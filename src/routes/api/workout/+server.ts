@@ -1,5 +1,5 @@
-import type { Workout } from '@prisma/client';
-import { error, type RequestHandler } from '@sveltejs/kit';
+import type { VwWorkout, Workout } from '@prisma/client';
+import { error, json, type RequestHandler } from '@sveltejs/kit';
 import sanitizeHtml, { defaults } from 'sanitize-html';
 
 export const POST: RequestHandler = async ({ request, locals: { prisma, getSession } }) => {
@@ -45,4 +45,45 @@ export const POST: RequestHandler = async ({ request, locals: { prisma, getSessi
 	});
 
 	return new Response();
+};
+
+export const GET: RequestHandler = async ({ locals: { prisma }, url }) => {
+	const searchParam = url.searchParams.get('search');
+	let workouts: Array<VwWorkout>;
+
+	if (searchParam === null || searchParam.length === 0) {
+		workouts = await prisma.vwWorkout.findMany();
+	} else {
+		const searchValues = searchParam.split(' ');
+
+		const or = new Array<Record<string, unknown>>(0);
+
+		const columns = ['excerpt', 'title', 'createdByUserName'];
+
+		for (let i = 0; i < columns.length; i++) {
+			const col = columns[i];
+			for (let j = 0; j < searchValues.length; j++) {
+				const searchValue = searchValues[j];
+				const record: Record<string, unknown> = {};
+				const innerRecord = {
+					contains: searchParam
+				};
+				innerRecord.contains = searchValue;
+				record[col] = innerRecord;
+				or.push(record);
+			}
+		}
+
+		console.log(or);
+
+		workouts = await prisma.vwWorkout.findMany({
+			where: {
+				OR: or
+			}
+		});
+
+		console.log(workouts);
+	}
+
+	return json(workouts);
 };

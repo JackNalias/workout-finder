@@ -7,7 +7,6 @@ SELECT
   Workout.fkCreatedByUserId AS createdByUserId,
   COALESCE(x.cnt, 0) AS likes,
   COALESCE(y.cnt, 0) AS dislikes,
-  COALESCE(y.cnt, 0) AS comments,
   Workout.lastModifiedOn
 FROM
   Workout
@@ -29,13 +28,4 @@ FROM
       WorkoutDislike
     GROUP BY
       fkWorkoutId
-  ) AS y ON Workout.id = y.fkWorkoutId
-  LEFT JOIN (
-    SELECT
-      fkWorkoutId,
-      count(*) AS cnt
-    FROM
-      COMMENT
-    GROUP BY
-      fkWorkoutId
-  ) AS z ON Workout.id = z.fkWorkoutId;
+  ) AS y ON Workout.id = y.fkWorkoutId;

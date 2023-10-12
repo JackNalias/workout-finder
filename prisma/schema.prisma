@@ -41,8 +41,6 @@ model User {
   emailVerified  DateTime?
   image          String?
   accounts       Account[]
-  Comment        Comment[]
-  CommentLike    CommentLike[]
   sessions       Session[]
   Workout        Workout[]
   WorkoutDislike WorkoutDislike[]
@@ -67,7 +65,6 @@ model Workout {
   quill_plain_text  String           @db.Text
   createdOn         DateTime         @default(now(), map: "DF_Workout_createdOn") @db.Date
   lastModifiedOn    DateTime         @default(now(), map: "DF_Workout_lastModifiedOn") @db.Date
-  Comment           Comment[]
   User              User             @relation(fields: [fkCreatedByUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Workout_User")
   WorkoutDislike    WorkoutDislike[]
   WorkoutLike       WorkoutLike[]
@@ -93,29 +90,6 @@ model WorkoutLike {
   @@unique([fkUserId, fkWorkoutId], map: "UQ_WorkoutLike")
 }
 
-model Comment {
-  id                Int           @id(map: "PK_Comment") @default(autoincrement())
-  fkParentCommentId Int
-  fkUserId          Int
-  fkWorkoutId       Int
-  commentText       String        @db.VarChar(2000)
-  isDeleted         Boolean
-  createdOn         DateTime      @default(now(), map: "DF_Comment_createdOn") @db.SmallDateTime
-  Comment           Comment       @relation("CommentToComment", fields: [fkParentCommentId], references: [id], onUpdate: NoAction, map: "FK_Comment_ParentComment")
-  other_Comment     Comment[]     @relation("CommentToComment")
-  User              User          @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_Comment_User")
-  Workout           Workout       @relation(fields: [fkWorkoutId], references: [id], onUpdate: NoAction, map: "FK_Comment_Workout")
-  CommentLike       CommentLike[]
-}
-
-model CommentLike {
-  id          Int     @id(map: "PK_CommentLike") @default(autoincrement())
-  fkUserId    Int
-  fkCommentId Int
-  Comment     Comment @relation(fields: [fkCommentId], references: [id], onUpdate: NoAction, map: "FK_CommentLike_Comment")
-  User        User    @relation(fields: [fkUserId], references: [id], onUpdate: NoAction, map: "FK_CommentLike_User")
-}
-
 view VwWorkout {
   workoutId         Int      @unique
   title             String   @db.VarChar(200)
@@ -125,6 +99,5 @@ view VwWorkout {
   createdByUserId   Int
   likes             Int
   dislikes          Int
-  comments          Int
   lastModifiedOn    DateTime @db.Date
 }

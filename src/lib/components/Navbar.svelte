@@ -10,10 +10,6 @@
 		{
 			text: 'Search workouts',
 			url: '/'
-		},
-		{
-			text: 'Contact',
-			url: '/contact'
 		}
 	];
 
@@ -49,7 +45,7 @@
 				{#if !$page.data.session?.user}
 					<div class="lg:flex lg:flex-1 lg:justify-end">
 						<button
-							on:click={() => signIn()}
+							on:click={() => signIn('google')}
 							class="flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 group"
 							>Log in <svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -69,28 +65,6 @@
 						>
 					</div>
 				{:else}
-					<button
-						type="button"
-						class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-					>
-						<span class="absolute -inset-1.5" />
-						<span class="sr-only">View notifications</span>
-						<svg
-							class="h-6 w-6"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							aria-hidden="true"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-							/>
-						</svg>
-					</button>
-
 					<!-- Profile dropdown -->
 					<div class="relative ml-3">
 						<div>
@@ -104,11 +78,14 @@
 							>
 								<span class="absolute -inset-1.5" />
 								<span class="sr-only">Open user menu</span>
-								<img
-									class="h-8 w-8 rounded-full"
-									src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-									alt=""
-								/>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-8 w-8 fill-blue-600"
+									viewBox="0 0 448 512"
+									><path
+										d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+									/></svg
+								>
 							</button>
 						</div>
 
@@ -208,7 +185,7 @@
 				{/each}
 				{#if !isLoggedIn}
 					<button
-						on:click={() => signIn()}
+						on:click={() => signIn('google')}
 						class="block w-full text-left border-l-4 py-2 pl-3 pr-4 text-base font-medium {$page.url
 							.pathname === '/login'
 							? 'bg-indigo-50 border-indigo-500 text-indigo-700'
