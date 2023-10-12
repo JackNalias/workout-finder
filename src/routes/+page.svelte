@@ -4,7 +4,7 @@
 	let search = '';
 
 	const onSearch = async () => {
-		const res = await fetch(`/api/workout/?search=${search}`);
+		const res = await fetch(`/test/api/workout/?search=${search}`);
 		if (res.ok) {
 			data.workouts = await res.json();
 		}

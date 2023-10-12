@@ -20,7 +20,7 @@
 			method = 'DELETE';
 		}
 
-		const res = await fetch(`/api/workout-like/${data.workout.workoutId}`, {
+		const res = await fetch(`/test/api/workout-like/${data.workout.workoutId}`, {
 			method
 		});
 
@@ -48,7 +48,7 @@
 			method = 'DELETE';
 		}
 
-		const res = await fetch(`/api/workout-dislike/${data.workout.workoutId}`, {
+		const res = await fetch(`/test/api/workout-dislike/${data.workout.workoutId}`, {
 			method
 		});
 

@@ -70,7 +70,7 @@
 	};
 
 	const postWorkout = async () => {
-		const res = await fetch('/api/workout', {
+		const res = await fetch('/test/api/workout', {
 			method: 'POST',
 			body: JSON.stringify({
 				title: title,

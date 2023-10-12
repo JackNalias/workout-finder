@@ -5,7 +5,7 @@
 	export let data;
 
 	const onDelete = async (workoutId: number) => {
-		const res = await fetch(`/api/workout/${workoutId}`, {
+		const res = await fetch(`/test/api/workout/${workoutId}`, {
 			method: 'DELETE'
 		});
 		if (res.ok) {
@@ -16,7 +16,7 @@
 	let search = '';
 
 	const onSearch = async () => {
-		const res = await fetch(`/api/workout/?search=${search}`);
+		const res = await fetch(`/test/api/workout/?search=${search}`);
 		if (res.ok) {
 			data.workouts = await res.json();
 		}
